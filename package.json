@@ -1,0 +1,14 @@
+{
+  "name": "instead-assignment",
+  "private": true,
+  "workspaces": [
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w backend",
+    "build": "npm run build -w backend",
+    "start": "npm run start -w backend",
+    "test": "npm run test -w backend",
+    "db:init": "npm run db:init -w backend"
+  }
+}

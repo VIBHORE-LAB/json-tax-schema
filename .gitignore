@@ -1,0 +1,5 @@
+node_modules/@instead/backend/dist/models/template.js
+node_modules/
+node_modules
+.env
+.env.local
