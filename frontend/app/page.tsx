@@ -121,36 +121,6 @@ function field(
   };
 }
 
-const defaultFields: AnnotationField[] = [
-  field("your_first_name_middle_initial", "Your first name and middle initial", "/taxpayer/firstName", "text", 72, 116, 160, 16),
-  field("your_last_name", "Last name", "/taxpayer/lastName", "text", 246, 116, 150, 16),
-  field("your_social_security_number", "Your social security number", "/taxpayer/ssn", "text", 430, 116, 118, 16),
-  field("spouse_first_name_middle_initial", "Spouse first name and middle initial", "/taxpayer/spouse/firstName", "text", 72, 136, 160, 16),
-  field("spouse_last_name", "Spouse last name", "/taxpayer/spouse/lastName", "text", 246, 136, 150, 16),
-  field("spouse_social_security_number", "Spouse social security number", "/taxpayer/spouse/ssn", "text", 430, 136, 118, 16),
-  field("home_address_street", "Home address", "/taxpayer/address/street", "text", 72, 154, 330, 16),
-  field("apartment_number", "Apt. no.", "/taxpayer/address/apartment", "text", 430, 154, 80, 16),
-  field("city_town_post_office", "City, town, or post office", "/taxpayer/address/city", "text", 72, 190, 255, 16),
-  field("state", "State", "/taxpayer/address/state", "text", 350, 190, 42, 16, "center"),
-  field("zip_code", "ZIP code", "/taxpayer/address/zip", "text", 430, 190, 95, 16),
-  field("presidential_election_campaign_you", "Presidential Election Campaign You", "/taxpayer/electionCampaign", "checkbox", 410, 230, 10, 10, "center"),
-  field("presidential_election_campaign_spouse", "Presidential Election Campaign Spouse", "/taxpayer/spouseElectionCampaign", "checkbox", 490, 230, 10, 10, "center"),
-  field("filing_status_single", "Filing Status Single", "/taxpayer/filingStatus/single", "checkbox", 72, 268, 10, 10, "center"),
-  field("digital_assets_no", "Digital Assets No", "/taxpayer/digitalAssets/no", "checkbox", 532, 346, 10, 10, "center"),
-  field("dependent_1_first_name", "Dependent 1 first name", "/taxpayer/dependents/0/firstName", "text", 138, 404, 82, 14),
-  field("dependent_1_last_name", "Dependent 1 last name", "/taxpayer/dependents/0/lastName", "text", 225, 404, 82, 14),
-  field("dependent_1_ssn", "Dependent 1 SSN", "/taxpayer/dependents/0/ssn", "text", 312, 404, 74, 14),
-  field("dependent_1_relationship", "Dependent 1 relationship", "/taxpayer/dependents/0/relationship", "text", 392, 404, 70, 14),
-  field("dependent_1_child_tax_credit", "Dependent 1 child tax credit", "/taxpayer/dependents/0/childTaxCredit", "checkbox", 494, 468, 10, 10, "center"),
-  field("line_1a_total_w2_wages", "1a Total amount from Forms W-2", "/taxpayer/income/wages", "decimal", 455, 528, 88, 14, "right"),
-  field("line_1b_household_employee_wages", "1b Household employee wages", "/taxpayer/income/householdEmployeeWages", "decimal", 455, 548, 88, 14, "right"),
-  field("line_1c_tip_income", "1c Tip income", "/taxpayer/income/tips", "decimal", 455, 568, 88, 14, "right"),
-  field("line_2a_tax_exempt_interest", "2a Tax-exempt interest", "/taxpayer/income/taxExemptInterest", "decimal", 250, 708, 72, 14, "right"),
-  field("line_2b_taxable_interest", "2b Taxable interest", "/taxpayer/income/taxableInterest", "decimal", 455, 708, 88, 14, "right"),
-  field("line_3a_qualified_dividends", "3a Qualified dividends", "/taxpayer/income/qualifiedDividends", "decimal", 250, 728, 72, 14, "right"),
-  field("line_3b_ordinary_dividends", "3b Ordinary dividends", "/taxpayer/income/ordinaryDividends", "decimal", 455, 728, 88, 14, "right")
-];
-
 function emptyField(index: number): AnnotationField {
   return field(`field_${index + 1}`, `Field ${index + 1}`, "", "text", 72, 160 + index * 24, 160, 16);
 }
@@ -194,8 +164,8 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [template, setTemplate] = useState<TaxFormTemplate | null>(null);
   const [templates, setTemplates] = useState<TaxFormTemplate[]>([]);
-  const [fields, setFields] = useState<AnnotationField[]>(defaultFields);
-  const [selectedFieldId, setSelectedFieldId] = useState(defaultFields[0].id);
+  const [fields, setFields] = useState<AnnotationField[]>([]);
+  const [selectedFieldId, setSelectedFieldId] = useState("");
   const [tab, setTab] = useState<"field" | "json" | "data">("field");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [revision, setRevision] = useState(0);
@@ -463,6 +433,9 @@ export default function Home() {
                 </Button>
               </div>
               <div className="grid content-start gap-1.5 overflow-auto">
+                {fields.length === 0 ? (
+                  <div className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">No fields yet</div>
+                ) : null}
                 {fields.map((item) => (
                   <button
                     key={item.id}
