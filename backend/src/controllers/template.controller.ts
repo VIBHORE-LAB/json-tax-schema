@@ -119,6 +119,10 @@ export async function getSource(req: Request, res: Response) {
   const template = await findTemplate(id);
   const bytes = template.sourceBytes;
 
+  if (!bytes) {
+    throw new AppError(409, "Source PDF was uploaded before durable storage was enabled; upload the PDF again");
+  }
+
   if (fingerprint(bytes) !== template.sourceSha256) {
     throw new AppError(409, "Stored source PDF has changed");
   }
@@ -246,6 +250,10 @@ export async function renderTemplate(req: Request, res: Response) {
   }
 
   const source = template.sourceBytes;
+
+  if (!source) {
+    throw new AppError(409, "Source PDF was uploaded before durable storage was enabled; upload the PDF again");
+  }
 
   // Validate stored annotation before using it.
   const annotation = annotationSchema.parse(version.annotation);

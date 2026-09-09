@@ -17,7 +17,7 @@ interface TemplateAttributes {
   taxYear: number;
   sourceKey: string;
   sourceSha256: string;
-  sourceBytes: Buffer;
+  sourceBytes: Buffer | null;
   pages: PageInfo[];
 }
 
@@ -30,7 +30,7 @@ export class Template extends Model<
   declare taxYear: number;
   declare sourceKey: string;
   declare sourceSha256: string;
-  declare sourceBytes: Buffer;
+  declare sourceBytes: Buffer | null;
   declare pages: PageInfo[];
 }
 
@@ -64,7 +64,7 @@ Template.init(
 
     sourceBytes: {
       type: DataTypes.BLOB("long"),
-      allowNull: false,
+      allowNull: true,
     },
 
     pages: {
