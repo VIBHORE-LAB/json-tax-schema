@@ -21,7 +21,6 @@ import {
 
 import {
   saveSource,
-  readSource,
   removeSource,
 } from "../lib/storage.js";
 
@@ -91,6 +90,7 @@ export async function createTemplate(req: Request, res: Response) {
       taxYear: body.taxYear,
       sourceKey,
       sourceSha256,
+      sourceBytes: req.file.buffer,
       pages,
     });
   } catch (error) {
@@ -134,7 +134,7 @@ export async function getTemplate(req: Request, res: Response) {
 export async function getSource(req: Request, res: Response) {
   const id = idSchema.parse(req.params.id);
   const template = await findTemplate(id);
-  const bytes = await readSource(template.sourceKey);
+  const bytes = template.sourceBytes;
 
   if (fingerprint(bytes) !== template.sourceSha256) {
     throw new AppError(409, "Stored source PDF has changed");
@@ -262,7 +262,7 @@ export async function renderTemplate(req: Request, res: Response) {
     throw new AppError(404, "Annotation revision not found");
   }
 
-  const source = await readSource(template.sourceKey);
+  const source = template.sourceBytes;
 
   // Validate stored annotation before using it.
   const annotation = annotationSchema.parse(version.annotation);
