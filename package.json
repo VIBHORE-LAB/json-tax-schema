@@ -2,12 +2,17 @@
   "name": "instead-assignment",
   "private": true,
   "workspaces": [
-    "backend"
+    "backend",
+    "frontend"
   ],
   "scripts": {
-    "dev": "npm run dev -w backend",
-    "build": "npm run build -w backend",
-    "start": "npm run start -w backend",
+    "dev": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "start": "npm run start -w frontend",
     "test": "npm run test -w backend",
     "db:init": "npm run db:init -w backend"
   }
