@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Instead Form Annotator",
+  title: "Instead Assessment Form Annotator",
   description: "Tax form annotation workspace"
 };
 

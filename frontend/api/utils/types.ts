@@ -8,7 +8,6 @@ export type ApiOptions = {
 };
 
 export type NormalizedBox = {
-  page: number;
   x: number;
   y: number;
   width: number;
@@ -16,48 +15,79 @@ export type NormalizedBox = {
 };
 
 export type FieldFormat = {
-  type: "text" | "number" | "currency" | "date" | "checkbox" | "ssn" | "ein" | "phone";
-  fontSize?: number;
+  type: "text" | "decimal" | "checkbox";
+  decimals?: number;
+  grouping?: boolean;
+  negative?: "minus" | "parentheses";
+};
+
+export type FieldStyle = {
+  fontSize: number;
+  minFontSize: number;
+  padding: number;
   align?: "left" | "center" | "right";
-  multiline?: boolean;
-  overflow?: "shrink" | "truncate" | "wrap";
-  emptyValue?: string;
-  negativeStyle?: "minus" | "parentheses";
-  rounding?: "none" | "nearest-dollar" | "cents";
+  overflow?: "error" | "shrink";
 };
 
 export type AnnotationField = {
   id: string;
-  label: string;
+  page: number;
   box: NormalizedBox;
-  dataPath?: string;
-  expression?: string;
+  pointer: string;
   format: FieldFormat;
+  style: FieldStyle;
+  missing: "blank" | "error";
+  label?: string;
 };
 
 export type TaxFormTemplate = {
   id: string;
   name: string;
   taxYear: number;
-  formVersion: string;
-  pages: number;
-  fields: AnnotationField[];
-  createdAt?: string;
-  updatedAt?: string;
+  sourceSha256: string;
+  pages: Array<{
+    page: number;
+    width: number;
+    height: number;
+  }>;
 };
 
-export type CreateTemplatePayload = Omit<TaxFormTemplate, "id" | "createdAt" | "updatedAt">;
+export type TemplateListResponse = {
+  items: TaxFormTemplate[];
+  total: number;
+  limit: number;
+  offset: number;
+};
 
-export type UpdateTemplatePayload = Partial<CreateTemplatePayload>;
+export type Annotation = {
+  specVersion: "1.0.0";
+  units: "pt";
+  origin: "top-left";
+  sourceSha256: string;
+  fields: AnnotationField[];
+};
+
+export type AnnotationVersion = {
+  id: string;
+  templateId: string;
+  revision: number;
+  annotation: Annotation;
+};
+
+export type CreateTemplatePayload = {
+  name: string;
+  taxYear: number;
+  file: File;
+};
+
+export type SaveAnnotationPayload = {
+  expectedRevision: number;
+  annotation: Annotation;
+};
 
 export type RenderPayload = {
-  templateId: string;
+  revision: number;
   data: Record<string, unknown>;
-};
-
-export type RenderResponse = {
-  fileName: string;
-  url: string;
 };
 
 export type UploadResponse = {

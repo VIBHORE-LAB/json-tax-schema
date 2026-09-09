@@ -6,8 +6,8 @@ export const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024,
     files: 1,
-    fields: 2,
-    parts: 3,
+    fields: 10,
+    parts: 20,
     fieldSize: 1024,
   },
 });

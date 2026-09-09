@@ -13,10 +13,11 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().url().optional(),
 });
 
+const env = envSchema.parse(process.env);
 
 export const config = {
-  ...envSchema.parse(process.env),
-  FRONTEND_ORIGIN: envSchema.parse(process.env).FRONTEND_ORIGIN ?? envSchema.parse(process.env).CORS_ORIGIN ?? "http://localhost:3000",
+  ...env,
+  FRONTEND_ORIGIN: env.FRONTEND_ORIGIN ?? env.CORS_ORIGIN ?? "http://localhost:3000",
 
   storageDirectory: fileURLToPath(
     new URL("../storage/", import.meta.url),
