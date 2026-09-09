@@ -286,10 +286,14 @@ export default function Home() {
     }
   }
 
-  async function saveCurrentAnnotation() {
+  async function saveCurrentAnnotation(): Promise<number | null> {
     if (!template || !annotation) {
       setStatus("Upload a PDF first");
-      return;
+      return null;
+    }
+    if (fields.length === 0) {
+      setStatus("Add at least one field before saving");
+      return null;
     }
     setBusy(true);
     setStatus("Saving annotation");
@@ -298,8 +302,10 @@ export default function Home() {
       setRevision(saved.revision);
       setStatus(`Annotation saved as revision ${saved.revision}`);
       await refreshHistory();
+      return saved.revision;
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Save failed");
+      return null;
     } finally {
       setBusy(false);
     }
@@ -310,15 +316,22 @@ export default function Home() {
       setStatus("Upload a PDF first");
       return;
     }
-    if (revision === 0) {
-      setStatus("Save annotation before rendering");
+    if (!annotation || fields.length === 0) {
+      setStatus("Add at least one field before rendering");
+      return;
+    }
+    if (fields.some((fieldValue) => !fieldValue.pointer)) {
+      setStatus("Every field needs a data pointer before rendering");
       return;
     }
     setBusy(true);
-    setStatus("Rendering PDF");
+    setStatus("Saving annotation before render");
     try {
-      const blob = await renderFilledPdf(template.id, { revision, data: JSON.parse(data) });
-      downloadBlob(blob, `filled-${name.replaceAll(" ", "-").toLowerCase()}-r${revision}.pdf`);
+      const saved = await saveAnnotation(template.id, { expectedRevision: revision, annotation });
+      setRevision(saved.revision);
+      setStatus("Rendering PDF");
+      const blob = await renderFilledPdf(template.id, { revision: saved.revision, data: JSON.parse(data) });
+      downloadBlob(blob, `filled-${name.replaceAll(" ", "-").toLowerCase()}-r${saved.revision}.pdf`);
       setStatus("Filled PDF downloaded");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Render failed");

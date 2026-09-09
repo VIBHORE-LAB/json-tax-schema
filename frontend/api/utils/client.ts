@@ -2,6 +2,14 @@ import type { ApiOptions } from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000/api";
 
+function apiErrorMessage(payload: unknown, fallback: string) {
+  if (payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string") {
+    return payload.error;
+  }
+
+  return fallback || "Request failed";
+}
+
 export class ApiError extends Error {
   status: number;
   details: unknown;
@@ -29,7 +37,7 @@ export async function apiRequest<T>(path: string, options: ApiOptions = {}): Pro
   const payload = contentType.includes("application/json") ? await response.json() : await response.text();
 
   if (!response.ok) {
-    throw new ApiError(response.statusText || "Request failed", response.status, payload);
+    throw new ApiError(apiErrorMessage(payload, response.statusText), response.status, payload);
   }
 
   return payload as T;
@@ -49,7 +57,7 @@ export async function apiBlob(path: string, options: ApiOptions = {}): Promise<B
   if (!response.ok) {
     const contentType = response.headers.get("content-type") ?? "";
     const payload = contentType.includes("application/json") ? await response.json() : await response.text();
-    throw new ApiError(response.statusText || "Request failed", response.status, payload);
+    throw new ApiError(apiErrorMessage(payload, response.statusText), response.status, payload);
   }
 
   return response.blob();

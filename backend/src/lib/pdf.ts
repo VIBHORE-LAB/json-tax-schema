@@ -119,6 +119,7 @@ export async function renderPdf(
   validateBounds(annotation, pages);
 
   const font = await document.embedFont(StandardFonts.Helvetica);
+  let drawnFields = 0;
 
   for (const field of annotation.fields) {
     const value = resolvePointer(data, field.pointer);
@@ -202,6 +203,14 @@ export async function renderPdf(
       size: fontSize,
       font,
       color: rgb(0, 0, 0),
+    });
+
+    drawnFields += 1;
+  }
+
+  if (annotation.fields.length > 0 && drawnFields === 0) {
+    throw new AppError(422, "No printable values were resolved from the provided data", {
+      fieldCount: annotation.fields.length,
     });
   }
 
