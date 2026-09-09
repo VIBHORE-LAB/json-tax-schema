@@ -1,5 +1,8 @@
-node_modules/@instead/backend/dist/models/template.js
 node_modules/
-node_modules
+
+dist/
+build/
+coverage/
+
 .env
 .env.local
