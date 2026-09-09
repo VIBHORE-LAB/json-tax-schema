@@ -19,11 +19,6 @@ import {
   renderPdf,
 } from "../lib/pdf.js";
 
-import {
-  saveSource,
-  removeSource,
-} from "../lib/storage.js";
-
 const idSchema = z.string().uuid();
 
 const uploadSchema = z.object({
@@ -79,27 +74,15 @@ export async function createTemplate(req: Request, res: Response) {
   const sourceKey = `${id}.pdf`;
   const sourceSha256 = fingerprint(req.file.buffer);
 
-  await saveSource(sourceKey, req.file.buffer);
-
-  let template: Template;
-
-  try {
-    template = await Template.create({
-      id,
-      name: body.name,
-      taxYear: body.taxYear,
-      sourceKey,
-      sourceSha256,
-      sourceBytes: req.file.buffer,
-      pages,
-    });
-  } catch (error) {
-    await removeSource(sourceKey).catch((cleanupError) => {
-      console.error("Source cleanup failed:", cleanupError);
-    });
-
-    throw error;
-  }
+  const template = await Template.create({
+    id,
+    name: body.name,
+    taxYear: body.taxYear,
+    sourceKey,
+    sourceSha256,
+    sourceBytes: req.file.buffer,
+    pages,
+  });
 
   res.status(201).json(publicTemplate(template));
 }
